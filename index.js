@@ -102,6 +102,11 @@ async function run() {
             const result = await usersDatabase.insertOne(user);
             res.send(result);
         })
+        app.get('/users/buyers', verifyJWT, verifyAdmin, async(req, res) => {
+            const query = {role: "Buyer"};
+            const result = await usersDatabase.find(query).toArray();
+            res.send(result);
+        })
 
 
         app.get('/jwt', async(req, res) => {
@@ -121,7 +126,7 @@ async function run() {
             const email = req.params.email;
             const query = {email};
             const user = await usersDatabase.findOne(query)
-            res.send({isAdmin: user?.role === 'admin'})
+            res.send({isAdmin: user?.role === "admin"})
 
         })
         app.get('/users/buyer/:email',verifyJWT, verifyBuyer, async(req, res) => {
