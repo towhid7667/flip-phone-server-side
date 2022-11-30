@@ -15,10 +15,16 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try{
         const bestdealsDatabase = client.db("FlipPhone").collection("bestDeals");
+        const androidDatabase = client.db("FlipPhone").collection("android");
 
         app.get('/bestDeals', async(req, res) => {
             const query = {};
             const result = await bestdealsDatabase.find(query).toArray();
+            res.send(result);
+        })
+        app.get('/androids', async(req, res) => {
+            const query = {};
+            const result = await androidDatabase.find(query).toArray();
             res.send(result);
         })
 
