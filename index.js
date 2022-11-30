@@ -16,6 +16,7 @@ async function run() {
     try{
         const bestdealsDatabase = client.db("FlipPhone").collection("bestDeals");
         const androidDatabase = client.db("FlipPhone").collection("android");
+        const appleDatabase = client.db("FlipPhone").collection("AppleProducts");
 
         app.get('/bestDeals', async(req, res) => {
             const query = {};
@@ -25,6 +26,11 @@ async function run() {
         app.get('/androids', async(req, res) => {
             const query = {};
             const result = await androidDatabase.find(query).toArray();
+            res.send(result);
+        })
+        app.get('/appleproducts', async(req, res) => {
+            const query = {};
+            const result = await appleDatabase.find(query).toArray();
             res.send(result);
         })
 
