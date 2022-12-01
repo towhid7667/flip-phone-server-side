@@ -38,6 +38,7 @@ async function run() {
         const appleDatabase = client.db("FlipPhone").collection("AppleProducts");
         const gamingphonesDatabase = client.db("FlipPhone").collection("gamingphones");
         const usersDatabase = client.db("FlipPhone").collection("users");
+        const productDatabase = client.db("FlipPhone").collection("AllProducts");
 
 
 
@@ -66,7 +67,7 @@ async function run() {
             const query = { email: decodedEmail };
             const user = await usersDatabase.findOne(query);
 
-            if (user?.role !== 'Seller') {
+            if (user?.role !== "Seller") {
                 return res.status(403).send({ message: 'forbidden access' })
             }
             next();
@@ -82,28 +83,34 @@ async function run() {
             const result = await bestdealsDatabase.find(query).toArray();
             res.send(result);
         })
-        app.get('/androids', async(req, res) => {
-            const query = {};
-            const result = await androidDatabase.find(query).toArray();
-            res.send(result);
-        })
-        app.get('/appleproducts', async(req, res) => {
-            const query = {};
-            const result = await appleDatabase.find(query).toArray();
-            res.send(result);
-        })
-        app.get('/gamingphones', async(req, res) => {
-            const query = {};
-            const result = await gamingphonesDatabase.find(query).toArray();
-            res.send(result);
-        })
+  
         app.post('/users', async(req, res) => {
             const user = req.body;
             const result = await usersDatabase.insertOne(user);
             res.send(result);
         })
+        // app.get('/users/:email',  async(req, res) => {
+        //     const email = req.params.email;
+        //     const query = {email: email};
+        //     const result = await usersDatabase.findOne(query);
+        //     res.send(result);
+        // })
+
+        app.delete('/users/:id',verifyJWT, verifyAdmin, async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const result = await usersDatabase.deleteOne(filter);
+            res.send(result);
+        })
+
+
         app.get('/users/buyers', verifyJWT, verifyAdmin, async(req, res) => {
             const query = {role: "Buyer"};
+            const result = await usersDatabase.find(query).toArray();
+            res.send(result);
+        })
+        app.get('/users/sellers', verifyJWT, verifyAdmin, async(req, res) => {
+            const query = {role: "Seller"};
             const result = await usersDatabase.find(query).toArray();
             res.send(result);
         })
@@ -142,6 +149,38 @@ async function run() {
             const user = await usersDatabase.findOne(query)
             res.send({isSeller: user?.role === 'Seller'})
 
+        })
+
+        
+
+        app.post('/allproducts',verifyJWT, async(req, res) => {
+            const product = req.body;
+            const result = await productDatabase.insertOne(product);
+            res.send(result);
+        })
+
+        app.get('/allproducts', async(req, res) => {
+            const query = {};
+            const result = await productDatabase.find(query).toArray();
+            res.send(result);
+        })
+
+
+
+        app.get('/androids', async(req, res) => {
+            const query = {category: "Android"};
+            const result = await productDatabase.find(query).toArray();
+            res.send(result);
+        })
+        app.get('/appleproducts', async(req, res) => {
+            const query = {category: "Apple"};
+            const result = await productDatabase.find(query).toArray();
+            res.send(result);
+        })
+        app.get('/gamingphones', async(req, res) => {
+            const query = {category: "Gaming Phone"};
+            const result = await productDatabase.find(query).toArray();
+            res.send(result);
         })
 
     }
