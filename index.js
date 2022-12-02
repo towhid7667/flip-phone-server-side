@@ -39,6 +39,7 @@ async function run() {
         const gamingphonesDatabase = client.db("FlipPhone").collection("gamingphones");
         const usersDatabase = client.db("FlipPhone").collection("users");
         const productDatabase = client.db("FlipPhone").collection("AllProducts");
+        const orderDatabase = client.db("FlipPhone").collection("orderList");
 
 
 
@@ -78,23 +79,23 @@ async function run() {
 
 
 
-        app.get('/bestDeals', async(req, res) => {
-            const query = {};
-            const result = await bestdealsDatabase.find(query).toArray();
-            res.send(result);
-        })
+        // app.get('/bestDeals', async(req, res) => {
+        //     const query = {};
+        //     const result = await bestdealsDatabase.find(query).toArray();
+        //     res.send(result);
+        // })
   
         app.post('/users', async(req, res) => {
             const user = req.body;
             const result = await usersDatabase.insertOne(user);
             res.send(result);
         })
-        // app.get('/users/:email',  async(req, res) => {
-        //     const email = req.params.email;
-        //     const query = {email: email};
-        //     const result = await usersDatabase.findOne(query);
-        //     res.send(result);
-        // })
+        app.get('/users/:email',  async(req, res) => {
+            const email = req.params.email;
+            const query = {email: email};
+            const result = await usersDatabase.findOne(query);
+            res.send(result);
+        })
 
         app.delete('/users/:id',verifyJWT, verifyAdmin, async (req, res) => {
             const id = req.params.id;
@@ -164,12 +165,23 @@ async function run() {
             const result = await productDatabase.find(query).toArray();
             res.send(result);
         })
+        app.get('/allproducts/bestdeal', async(req, res) => {
+            const query = {advertisement : "Yes"};
+            const result = await productDatabase.find(query).toArray();
+            res.send(result);
+        })
         app.get('/allproducts/:id', async(req, res) => {
             const id = req.params.id;
             const query = {_id : ObjectId(id)};
             const result = await productDatabase.find(query).toArray();
             res.send(result);
         })
+        // app.get('/allproducts/:name', async(req, res) => {
+        //     const name = req.params.name;
+        //     const query = {sellerName : `${name}`};
+        //     const result = await productDatabase.find(query).toArray();
+        //     res.send(result);
+        // })
 
 
 
@@ -186,6 +198,29 @@ async function run() {
         app.get('/gamingphones', async(req, res) => {
             const query = {category: "Gaming Phone"};
             const result = await productDatabase.find(query).toArray();
+            res.send(result);
+        })
+
+        app.post('/orderlist', async(req, res) =>{
+            const order = req.body;
+            const result = await orderDatabase.insertOne(order);
+            res.send(result);
+        })
+        app.get('/orderlist', async(req, res) =>{
+            const query = {};
+            const result = await orderDatabase.find(query).toArray();
+            res.send(result);
+        })
+        app.get('/orderlist/:name', async(req, res) =>{
+            const name = req.params.name;
+            const query = {sellerName : name};
+            const result = await orderDatabase.find(query).toArray();
+            res.send(result);
+        })
+        app.delete('/orderlist/:id', async(req, res) =>{
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const result = await orderDatabase.deleteOne(filter);
             res.send(result);
         })
 
